@@ -36,7 +36,7 @@ academica configure                 # set API keys interactively
 | `src/openbioacademia/` | The `academica` CLI package: `cli.py`, `configure.py`, `demo.py`. `pyproject.toml` maps `openbioacademia.tools` package-dir to `tools/`. |
 | `templates/` | LaTeX venue templates: `arxiv`, `iclr`, `icml`, `nature`, `neurips`. |
 | `config/agent-config.json` | Per-agent model + fallback config (provider-agnostic). |
-| `data/` | `research-memory.json` (cross-paper memory) and `voice-profile/` (author voice calibration). |
+| `data/` | `voice-profile/` (author voice calibration, ships with `sample.txt`). `research-memory.json` (cross-paper memory) is created at runtime by the orchestrator — see `orchestrator/research-director.md`. |
 | `examples/siren-paper/` | Reference end-to-end pipeline output (13-page paper). |
 | `tests/` | `test_citation_verifier.py`, `test_literature_client.py`, `test_cli.py`, plus `conftest.py`. |
 | `launch-kit/` | Launch copy (Reddit, HN, Dev.to, Twitter, newsletter). Not part of the pipeline. |
