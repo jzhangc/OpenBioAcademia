@@ -51,7 +51,7 @@ Your army:
 ```
 (1) !!ABSOLUTELY NO FAKE, PARTIALLY REAL AND HALLUCINATED CITATIONS!!
 
-(2) make sure all the details of the citations, such as article name, year, page numbers, journal/book/conference names, author names and DOI, are correct. 
+(2) make sure all the details of the citations, such as article name, year, page numbers, journal/book/conference names, author names(e.g. first and last names, as well as initials) and DOI, are correct. 
 
 (3) no partial citation title (article name, journal name, book name, etc) is allowed. 
 
