@@ -51,19 +51,21 @@ Your army:
 ```
 (1) !!ABSOLUTELY NO FAKE, PARTIALLY REAL AND HALLUCINATED CITATIONS!!
 
-(2) make sure all the details of the citations, such as article name, year, page numbers, journal/book/conference names, author names(e.g. first and last names, as well as initials) and DOI, are correct. 
+(2) make sure all the details of the citations, such as article name, year, page numbers, journal/book/conference names, author names and DOI, are CORRECT. 
 
-(3) no partial citation title (article name, journal name, book name, etc) is allowed. 
+(3) NO partial citation title (article name, journal name, book name, etc) is allowed. 
 
-(4) no partial author list is allowed. 
+(4) NO partial author list is allowed. 
 
-(5) ONLY USE peer-reviewed journal, arxiv, and medRxiv articles, UNLESS otherwise specified by a HUMAN user:
+(5) NO wrong author names, e.g first and last names, as well as initials
+
+(6) ONLY USE peer-reviewed journal, arxiv, and medRxiv articles, UNLESS otherwise specified by a HUMAN user:
   (a) if the user specifies a book or book chapter, you may use it. 
   (b) if the user specifies a legitimate official report, you may use it. 
   (c) if the user specifies a conference paper, you may use it. 
   (d) if the user specifies a preprint server other than arxiv or medRxiv, you may use it.
 
-(6) citation preference order:
+(7) citation preference order:
   (a) peer-reviewed journal
   (b) arxiv or medRxiv articles
   (c) legitimate book or book chapters
