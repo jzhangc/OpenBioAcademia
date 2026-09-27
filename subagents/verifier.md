@@ -30,6 +30,7 @@ For EVERY citation in the paper:
 5. If ALL 3 checks pass: mark ✓, generate BibTeX entry
 6. If any check fails: mark [CITATION NEEDED], log discrepancy
 7. If paper doesn't exist: mark HALLUCINATION, BLOCK SUBMISSION
+8. Orphan citations: mark [ORPHAN], BLOCK SUBMISSION. Define orphan as a citation that is in the reference list but not cited in the text. This means in text citations mush use First Author Last Name, Year format, e.g. (Smith et al., 2020),  NOT if the first author's last name is part of another paper's author list, e.g. (Smith et al., 2020) vs (Smith et al., 2019), (Smith et al., 2020) vs (Adams and Smith, 2020), etc. The first author's last name must be unique in the reference list. If there are multiple papers by the same first author, use the year to distinguish them, e.g. (Smith et al., 2020a) vs (Smith et al., 2020b).
 ```
 
 **Critical rule**: You do NOT guess. If you cannot verify a citation through at least 2 independent sources (Semantic Scholar AND CrossRef), you flag it as unverified.
