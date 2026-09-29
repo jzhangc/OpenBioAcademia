@@ -2,14 +2,14 @@
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/dev/assets/oh-my-opencode.schema.json",
   "agents": {
     "research-director": {
-      "model": "ollama/qwen3.6:35b-a3b-mxfp8",
+      "model": "ollama/qwen3.8:27b-mxfp8",
       "variant": "think",
-      "description": "Sisyphus Academica — autonomous research paper writing army conductor. Deploys 7+ specialized subagents including 6 novelty engines and 10 adversarial reviewers.",
+      "description": "Main agent that deploys 7+ specialized subagents including 6 novelty engines and 10 adversarial reviewers.",
       "skills": [
         "skill-academic-humanizer"
       ],
       "fallback_models": [
-        { "model": "ollama/gemma4:31b-mxfp8" }
+        { "model": "ollama/qwen3.6:35b-a3b-mxfp8" }
       ],
       "permission": {
         "bash": "allow",
@@ -27,12 +27,12 @@
       }
     },
     "literature-scout": {
-      "model": "ollama/qwen3.6:35b-a3b-mxfp8",
+      "model": "ollama/qwen3.8:27b-mxfp8",
       "variant": "fast",
       "description": "Multi-source literature search — arXiv, Semantic Scholar, CrossRef, OpenAlex",
       "skills": [],
       "fallback_models": [
-        { "model": "ollama/gemma4:31b-mxfp8" }
+        { "model": "ollama/qwen3.6:35b-a3b-mxfp8" }
       ],
       "permission": {
         "bash": "allow",
@@ -44,12 +44,12 @@
       }
     },
     "writer": {
-      "model": "ollama/qwen3.6:35b-a3b-mxfp8",
+      "model": "ollama/qwen3.8:27b-mxfp8",
       "variant": "think",
       "description": "Paper section writer with 41 Humanizer patterns as hard generation constraints",
       "skills": ["humanizer", "skill-academic-humanizer"],
       "fallback_models": [
-        { "model": "ollama/gemma4:31b-mxfp8" }
+        { "model": "ollama/qwen3.6:35b-a3b-mxfp8" }
       ],
       "permission": {
         "read": "allow",
@@ -61,12 +61,12 @@
       }
     },
     "verifier": {
-      "model": "ollama/qwen3.6:35b-a3b-mxfp8",
+      "model": "ollama/qwen3.8:27b-mxfp8",
       "variant": "think",
       "description": "3-module verification — citation accuracy, statistical validity, AI-pattern detection",
       "skills": ["humanizer", "skill-academic-humanizer"],
       "fallback_models": [
-        { "model": "ollama/gemma4:31b-mxfp8" }
+        { "model": "ollama/qwen3.6:35b-a3b-mxfp8" }
       ],
       "permission": {
         "read": "allow",
@@ -78,12 +78,12 @@
       }
     },
     "style-auditor": {
-      "model": "ollama/qwen3.6:35b-a3b-mxfp8",
+      "model": "ollama/qwen3.8:27b-mxfp8",
       "variant": "think",
       "description": "Final Humanizer certification gate — 41 pattern scan, em dash zero, voice consistency",
       "skills": ["humanizer", "skill-academic-humanizer"],
       "fallback_models": [
-        { "model": "ollama/gemma4:31b-mxfp8" }
+        { "model": "ollama/qwen3.6:35b-a3b-mxfp8" }
       ],
       "permission": {
         "read": "allow",
@@ -95,7 +95,7 @@
       }
     },
     "formatter": {
-      "model": "ollama/qwen3.6:35b-a3b-mxfp8",
+      "model": "ollama/qwen3.8:27b-mxfp8",
       "variant": "fast",
       "description": "LaTeX template formatting, BibTeX, figure embedding, PDF compilation",
       "skills": [],
@@ -109,12 +109,12 @@
       }
     },
     "heretic": {
-      "model": "ollama/qwen3.6:35b-a3b-mxfp8",
+      "model": "ollama/qwen3.8:27b-mxfp8",
       "variant": "think",
       "description": "Crown jewel novelty engine. Generates 50 wild hypotheses from title+abstract, then scores against actual paper.",
       "skills": ["skill-academic-humanizer"],
       "fallback_models": [
-        { "model": "ollama/gemma4:31b-mxfp8" }
+        { "model": "ollama/qwen3.6:35b-a3b-mxfp8" }
       ],
       "permission": {
         "read": "allow",
@@ -126,12 +126,12 @@
       }
     },
     "contrarian": {
-      "model": "ollama/qwen3.6:35b-a3b-mxfp8",
+      "model": "ollama/qwen3.8:27b-mxfp8",
       "variant": "think",
       "description": "Novelty engine — inverts well-established field claims",
       "skills": ["skill-academic-humanizer"],
       "fallback_models": [
-        { "model": "ollama/gemma4:31b-mxfp8" }
+        { "model": "ollama/qwen3.6:35b-a3b-mxfp8" }
       ],
       "permission": {
         "read": "allow",
@@ -143,12 +143,12 @@
       }
     },
     "cross-pollinator": {
-      "model": "ollama/qwen3.6:35b-a3b-mxfp8",
+      "model": "ollama/qwen3.8:27b-mxfp8",
       "variant": "think",
       "description": "Novelty engine — imports solutions from distant fields",
       "skills": [],
       "fallback_models": [
-        { "model": "ollama/gemma4:31b-mxfp8" }
+        { "model": "ollama/qwen3.6:35b-a3b-mxfp8" }
       ],
       "permission": {
         "read": "allow",
@@ -160,12 +160,12 @@
       }
     },
     "assumption-excavator": {
-      "model": "ollama/qwen3.6:35b-a3b-mxfp8",
+      "model": "ollama/qwen3.8:27b-mxfp8",
       "variant": "think",
       "description": "Novelty engine — enumerates and tests unstated assumptions",
       "skills": ["skill-academic-humanizer"],
       "fallback_models": [
-        { "model": "ollama/gemma4:31b-mxfp8" }
+        { "model": "ollama/qwen3.6:35b-a3b-mxfp8" }
       ],
       "permission": {
         "read": "allow",
@@ -177,12 +177,12 @@
       }
     },
     "counterfactual-generator": {
-      "model": "ollama/qwen3.6:35b-a3b-mxfp8",
+      "model": "ollama/qwen3.8:27b-mxfp8",
       "variant": "think",
       "description": "Novelty engine — rewrites field history without key papers",
       "skills": ["skill-academic-humanizer"],
       "fallback_models": [
-        { "model": "ollama/gemma4:31b-mxfp8" }
+        { "model": "ollama/qwen3.6:35b-a3b-mxfp8" }
       ],
       "permission": {
         "read": "allow",
@@ -194,12 +194,12 @@
       }
     },
     "paradox-sifter": {
-      "model": "ollama/qwen3.6:35b-a3b-mxfp8",
+      "model": "ollama/qwen3.8:27b-mxfp8",
       "variant": "think",
       "description": "Novelty engine — finds contradictions everyone ignores",
       "skills": ["skill-academic-humanizer"],
       "fallback_models": [
-        { "model": "ollama/gemma4:31b-mxfp8" }
+        { "model": "ollama/qwen3.6:35b-a3b-mxfp8" }
       ],
       "permission": {
         "read": "allow",
@@ -211,12 +211,12 @@
       }
     },
     "theorist": {
-      "model": "ollama/qwen3.6:35b-a3b-mxfp8",
+      "model": "ollama/qwen3.8:27b-mxfp8",
       "variant": "think",
       "description": "Adversarial reviewer — checks formal rigor and proofs",
       "skills": ["skill-academic-humanizer"],
       "fallback_models": [
-        { "model": "ollama/gemma4:31b-mxfp8" }
+        { "model": "ollama/qwen3.6:35b-a3b-mxfp8" }
       ],
       "permission": {
         "read": "allow",
@@ -228,12 +228,12 @@
       }
     },
     "empiricist": {
-      "model": "ollama/qwen3.6:35b-a3b-mxfp8",
+      "model": "ollama/qwen3.8:27b-mxfp8",
       "variant": "think",
       "description": "Adversarial reviewer — checks experimental rigor and baselines",
       "skills": [],
       "fallback_models": [
-        { "model": "ollama/gemma4:31b-mxfp8" }
+        { "model": "ollama/qwen3.6:35b-a3b-mxfp8" }
       ],
       "permission": {
         "read": "allow",
@@ -245,12 +245,12 @@
       }
     },
     "skeptic": {
-      "model": "ollama/qwen3.6:35b-a3b-mxfp8",
+      "model": "ollama/qwen3.8:27b-mxfp8",
       "variant": "fast",
       "description": "Adversarial reviewer — default position: results are wrong",
       "skills": [],
       "fallback_models": [
-        { "model": "ollama/gemma4:31b-mxfp8" }
+        { "model": "ollama/qwen3.6:35b-a3b-mxfp8" }
       ],
       "permission": {
         "read": "allow",
@@ -262,12 +262,12 @@
       }
     },
     "methodologist": {
-      "model": "ollama/qwen3.6:35b-a3b-mxfp8",
+      "model": "ollama/qwen3.8:27b-mxfp8",
       "variant": "think",
       "description": "Adversarial reviewer — checks statistical methodology",
       "skills": [],
       "fallback_models": [
-        { "model": "ollama/gemma4:31b-mxfp8" }
+        { "model": "ollama/qwen3.6:35b-a3b-mxfp8" }
       ],
       "permission": {
         "read": "allow",
@@ -279,12 +279,12 @@
       }
     },
     "historian": {
-      "model": "ollama/qwen3.6:35b-a3b-mxfp8",
+      "model": "ollama/qwen3.8:27b-mxfp8",
       "variant": "fast",
       "description": "Adversarial reviewer — checks prior art and citation accuracy",
       "skills": [],
       "fallback_models": [
-        { "model": "ollama/gemma4:31b-mxfp8" }
+        { "model": "ollama/qwen3.6:35b-a3b-mxfp8" }
       ],
       "permission": {
         "read": "allow",
