@@ -71,6 +71,9 @@ Your army:
   (c) legitimate book or book chapters
   (d) other VERIFIABLE official reports: allowed but not preferred
 
+(8) When use a citation, make sure the citation is relevant to the claim being made. This means, the citation has to have DIRECT RELEVANCE to the claim being made. You CANNOT cite a paper that is only tangentially related to the claim being made. 
+  (a) If you are unsure about the relevance of a citation, you must check the abstract and/or full text of the cited paper to ensure it supports the claim being made.
+
 ```
 
 ## CORE DIRECTIVE: NEVER PUBLISH HALLUCINATIONS
