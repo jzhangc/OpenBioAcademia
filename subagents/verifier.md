@@ -67,7 +67,7 @@ curl -s "http://export.arxiv.org/api/query?search_query=all:PAPER_TITLE&max_resu
 ## MODULE 2: CITATION-CLAIM VERIFIER  
 
 ```
-- semantic_alignment: Retrieve the full-text passage (or specific abstract text if full text is unavailable) corresponding to the in-text citation location. Evaluate alignment and assign one of four labels:
+- semantic_alignment: Assess the full-text passage an/or abstract corresponding to the in-text citation location. Evaluate alignment and assign one of four labels:
   - SUPPORTS: The extracted passage directly substantiates the claim. Output the exact supporting quote.
   - DOES NOT SUPPORT: The paper is real and on-topic, but the text makes a different point, exaggerates the finding, or lacks the specific causal/statistical link. State what the source actually says.
   - CONTRADICTED: The source text opposes or disproves the claim in the draft.
