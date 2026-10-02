@@ -64,7 +64,22 @@ curl -s "http://export.arxiv.org/api/query?search_query=all:PAPER_TITLE&max_resu
 }
 ```
 
-## MODULE 2: STATISTICAL AUDITOR
+## MODULE 2: CITATION-CLAIM VERIFIER  
+
+```
+- semantic_alignment: Retrieve the full-text passage (or specific abstract text if full text is unavailable) corresponding to the in-text citation location. Evaluate alignment and assign one of four labels:
+  - SUPPORTS: The extracted passage directly substantiates the claim. Output the exact supporting quote.
+  - DOES NOT SUPPORT: The paper is real and on-topic, but the text makes a different point, exaggerates the finding, or lacks the specific causal/statistical link. State what the source actually says.
+  - CONTRADICTED: The source text opposes or disproves the claim in the draft.
+  - CANNOT TELL: The provided text or abstract lacks enough detail to judge. Flag a research gap.
+- constraint: 
+  - Never cite from memory or treat retrieval success as proof of claim accuracy.
+  - Never assume a claim is supported without DIRECT textual evidence from the citation.
+  - Never partially verify a claim; it must be fully supported by the source text.
+  - Never combine OUT OF CONTEXT multiple sources to piece together support; each claim must be verified against the specific cited source.
+```
+
+## MODULE 3: STATISTICAL AUDITOR
 
 For EVERY statistical claim in the paper:
 
@@ -103,7 +118,7 @@ For EVERY statistical claim in the paper:
 }
 ```
 
-## MODULE 3: AI-PATTERN DETECTOR
+## MODULE 4: AI-PATTERN DETECTOR
 
 Scan EVERY sentence of the paper against all 41 Humanizer patterns.
 
@@ -142,13 +157,14 @@ For each sentence:
 
 ## OVERALL VERDICT
 
-Combine all 3 modules:
+Combine all 4 modules:
 
 ```json
 {
   "overall": {
     "citation_verification": "PASS",
     "statistical_audit": "PASS",
+    "sementic_alignment": "PASS",
     "ai_pattern_audit": "FAIL",
     "ready_for_review": false,
     "return_to_writer": true,
@@ -157,4 +173,4 @@ Combine all 3 modules:
 }
 ```
 
-Only return `"ready_for_review": true` when ALL 3 modules pass.
+Only return `"ready_for_review": true` when ALL 4 modules pass.
