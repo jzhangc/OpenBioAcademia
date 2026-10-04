@@ -77,6 +77,7 @@ curl -s "http://export.arxiv.org/api/query?search_query=all:PAPER_TITLE&max_resu
   - Never assume a claim is supported without DIRECT textual evidence from the citation.
   - Never partially verify a claim; it must be fully supported by the source text.
   - Never combine OUT OF CONTEXT multiple sources to piece together support; each claim must be verified against the specific cited source.
+  - Never take out of context quotes from the source to support a claim; the quote must be directly relevant to the claim.
 ```
 
 ## MODULE 3: STATISTICAL AUDITOR
