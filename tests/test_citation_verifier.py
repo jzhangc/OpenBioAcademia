@@ -139,11 +139,13 @@ class TestGenerateBibtex:
             "doi": "10.1234/test.2024.001",
             "title": "A Test Paper",
             "year": 2024,
+            "venue": "Journal of Testing",
         }
         bib = generate_bibtex(paper)
         assert bib.startswith("@article{")
         assert "10.1234/test.2024.001" in bib
         assert "A Test Paper" in bib
+        assert "journal = {Journal of Testing}" in bib
         assert bib.endswith("}")
 
     def test_bibtex_includes_year(self):

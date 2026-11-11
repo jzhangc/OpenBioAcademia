@@ -1,5 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/dev/assets/oh-my-opencode.schema.json",
+  "default_model": "ollama/qwen3.8:27b-mxfp8",
   "agents": {
     "research-director": {
       "model": "ollama/qwen3.8:27b-mxfp8",
@@ -294,12 +295,151 @@
         "edit": "deny",
         "task": "deny"
       }
+    },
+    "gap-analyzer": {
+      "model": "ollama/qwen3.8:27b-mxfp8",
+      "variant": "think",
+      "description": "Gap analyzer — finds genuine, testable research gaps in the literature corpus",
+      "skills": ["skill-academic-humanizer"],
+      "fallback_models": [
+        { "model": "ollama/qwen3.6:35b-a3b-mxfp8" }
+      ],
+      "permission": {
+        "read": "allow",
+        "write": { "/Users/jingzhang/Documents/git_repo/OpenBioAcademia/out/papers/*": "allow" },
+        "bash": "deny",
+        "webfetch": "allow",
+        "edit": "deny",
+        "task": "deny"
+      }
+    },
+    "methodology-designer": {
+      "model": "ollama/qwen3.8:27b-mxfp8",
+      "variant": "think",
+      "description": "Methodology designer — turns the selected hypothesis into a reproducible study with a pre-specified analysis plan",
+      "skills": [],
+      "fallback_models": [
+        { "model": "ollama/qwen3.6:35b-a3b-mxfp8" }
+      ],
+      "permission": {
+        "read": "allow",
+        "write": { "/Users/jingzhang/Documents/git_repo/OpenBioAcademia/out/papers/*": "allow" },
+        "bash": "allow",
+        "webfetch": "allow",
+        "edit": "deny",
+        "task": "deny"
+      }
+    },
+    "data-engineer": {
+      "model": "ollama/qwen3.8:27b-mxfp8",
+      "variant": "fast",
+      "description": "Data engineer — writes and runs analysis code, produces statistics.json and publication-quality figures",
+      "skills": [],
+      "fallback_models": [
+        { "model": "ollama/qwen3.6:35b-a3b-mxfp8" }
+      ],
+      "permission": {
+        "read": "allow",
+        "write": { "/Users/jingzhang/Documents/git_repo/OpenBioAcademia/out/papers/*": "allow" },
+        "bash": "allow",
+        "webfetch": "allow",
+        "edit": "deny",
+        "task": "deny"
+      }
+    },
+    "pragmatist": {
+      "model": "ollama/qwen3.8:27b-mxfp8",
+      "variant": "think",
+      "description": "Adversarial reviewer — reviews for practical impact, deployment feasibility, and real-world relevance",
+      "skills": [],
+      "fallback_models": [
+        { "model": "ollama/qwen3.6:35b-a3b-mxfp8" }
+      ],
+      "permission": {
+        "read": "allow",
+        "write": { "/Users/jingzhang/Documents/git_repo/OpenBioAcademia/out/papers/*": "allow" },
+        "bash": "deny",
+        "webfetch": "allow",
+        "edit": "deny",
+        "task": "deny"
+      }
+    },
+    "ethicist": {
+      "model": "ollama/qwen3.8:27b-mxfp8",
+      "variant": "think",
+      "description": "Adversarial reviewer — reviews for societal impact, ethical considerations, bias, and fairness",
+      "skills": [],
+      "fallback_models": [
+        { "model": "ollama/qwen3.6:35b-a3b-mxfp8" }
+      ],
+      "permission": {
+        "read": "allow",
+        "write": { "/Users/jingzhang/Documents/git_repo/OpenBioAcademia/out/papers/*": "allow" },
+        "bash": "deny",
+        "webfetch": "allow",
+        "edit": "deny",
+        "task": "deny"
+      }
+    },
+    "competitor": {
+      "model": "ollama/qwen3.8:27b-mxfp8",
+      "variant": "think",
+      "description": "Adversarial reviewer — reviews with deep knowledge of the closest competing work; catches incremental contributions",
+      "skills": [],
+      "fallback_models": [
+        { "model": "ollama/qwen3.6:35b-a3b-mxfp8" }
+      ],
+      "permission": {
+        "read": "allow",
+        "write": { "/Users/jingzhang/Documents/git_repo/OpenBioAcademia/out/papers/*": "allow" },
+        "bash": "deny",
+        "webfetch": "allow",
+        "edit": "deny",
+        "task": "deny"
+      }
+    },
+    "student": {
+      "model": "ollama/qwen3.8:27b-mxfp8",
+      "variant": "fast",
+      "description": "Adversarial reviewer — reviews for clarity, exposition, and accessibility",
+      "skills": [],
+      "fallback_models": [
+        { "model": "ollama/qwen3.6:35b-a3b-mxfp8" }
+      ],
+      "permission": {
+        "read": "allow",
+        "write": { "/Users/jingzhang/Documents/git_repo/OpenBioAcademia/out/papers/*": "allow" },
+        "bash": "deny",
+        "webfetch": "allow",
+        "edit": "deny",
+        "task": "deny"
+      }
+    },
+    "dreamer": {
+      "model": "ollama/qwen3.8:27b-mxfp8",
+      "variant": "fast",
+      "description": "Adversarial reviewer — reviews for untapped potential, moonshots, and where the work could go next",
+      "skills": [],
+      "fallback_models": [
+        { "model": "ollama/qwen3.6:35b-a3b-mxfp8" }
+      ],
+      "permission": {
+        "read": "allow",
+        "write": { "/Users/jingzhang/Documents/git_repo/OpenBioAcademia/out/papers/*": "allow" },
+        "bash": "deny",
+        "webfetch": "allow",
+        "edit": "deny",
+        "task": "deny"
+      }
     }
   },
   "disabled_agents": [],
   "agent_order": [
     "research-director",
     "literature-scout",
+    "gap-analyzer",
+    "methodology-designer",
+    "data-engineer",
     "writer",
     "verifier",
     "style-auditor",
@@ -312,8 +452,13 @@
     "paradox-sifter",
     "theorist",
     "empiricist",
+    "pragmatist",
     "skeptic",
+    "historian",
     "methodologist",
-    "historian"
+    "ethicist",
+    "competitor",
+    "student",
+    "dreamer"
   ]
 }

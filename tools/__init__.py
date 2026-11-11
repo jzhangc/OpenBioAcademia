@@ -1,1 +1,1 @@
-# Sisyphus Academica — Python CLI tools
+# OpenBioAcademia - Python CLI tools

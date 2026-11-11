@@ -11,6 +11,8 @@
 set -euo pipefail
 
 OPENBIOACADEMIA_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BIN_DIR="${ACADEMICA_BIN_DIR:-$HOME/.local/bin}"
+L="$OPENBIOACADEMIA_DIR/bin/academica"
 OPENCODE_AGENTS="${OPENCODE_AGENTS:-$HOME/.config/opencode/agents}"
 OPENCODE_SKILLS="${OPENCODE_SKILLS:-$HOME/.config/opencode/skills}"
 OPENCODE_CONFIG="${OPENCODE_CONFIG:-$HOME/.config/opencode}"
@@ -62,7 +64,7 @@ echo "[0/7] Subscription interview..."
 echo ""
 
 # Q0: Author name
-ask AUTHOR_NAME "What is your name?" "${USER:-argahv}"
+ask AUTHOR_NAME "What is your name?" "${USER:-anonymous}"
 
 # Write name to CITATION.cff
 if grep -q 'given-names: ""' "$OPENBIOACADEMIA_DIR/CITATION.cff" 2>/dev/null; then
@@ -223,27 +225,6 @@ fi
 echo ""
 
 # ==================================================================
-# INSTALL AGENT FILE with portable path transformation
-# ==================================================================
-install_agent_file() {
-    local src="$1"
-    local basename="$(basename "$src")"
-    local dest="$OPENCODE_AGENTS/$basename"
-    if [ ! -f "$src" ]; then
-        echo "  ⚠ Missing source: $src"
-        return 1
-    fi
-    mkdir -p "$OPENCODE_AGENTS"
-    sed \
-        -e "s|/root/openbioacademia|$OPENBIOACADEMIA_DIR|g" \
-        -e "s|/root/\.config/opencode|$OPENCODE_CONFIG|g" \
-        -e "s|/root/\.local/share/opencode|$HOME/.local/share/opencode|g" \
-        -e "s|/tmp/opencode|/tmp/opencode|g" \
-        "$src" > "$dest"
-    echo "  ✓ $basename"
-}
-
-# ==================================================================
 # Transform config/agent-config.json
 # ==================================================================
 install_config() {
@@ -320,19 +301,20 @@ fi
 # ==================================================================
 echo "[2/7] Installing academic-humanizer skill..."
 mkdir -p "$OPENCODE_SKILLS/skill-academic-humanizer"
-cp "$OPENBIOACADEMIA_DIR/skills/skill-academic-humanizer.md" "$OPENCODE_SKILLS/skill-academic-humanizer/SKILL.md" 2>/dev/null || \
+cp "$OPENBIOACADEMIA_DIR/skills/skill-academic-humanizer/SKILL.md" "$OPENCODE_SKILLS/skill-academic-humanizer/SKILL.md" 2>/dev/null || \
     echo "  ⚠ Could not copy academic-humanizer"
 echo "  ✓ Academic Humanizer installed"
 
 # ==================================================================
-# [3/7] Install orchestrator agents (25 total)
+# [3/7] Render agents via tools/agents.py (25 total)
 # ==================================================================
-echo "[3/7] Installing orchestrator agents (25 total)..."
-install_agent_file "$OPENBIOACADEMIA_DIR/orchestrator/research-director.md"
-for f in "$OPENBIOACADEMIA_DIR/subagents/"*.md; do install_agent_file "$f"; done
-for f in "$OPENBIOACADEMIA_DIR/novelty-engines/"*.md; do install_agent_file "$f"; done
-for f in "$OPENBIOACADEMIA_DIR/reviewers/"*.md; do install_agent_file "$f"; done
-echo "  → All agents installed in $OPENCODE_AGENTS"
+echo "[3/7] Render agents via tools/agents.py..."
+if command -v opencode >/dev/null 2>&1 || [ -d "$OPENCODE_AGENTS" ]; then
+    AGENT_ARGS=(--dest "$OPENCODE_AGENTS" --opencode-config "$OPENCODE_CONFIG")
+    python3 "$OPENBIOACADEMIA_DIR/tools/agents.py" "${AGENT_ARGS[@]}" || echo "  ⚠ agents.py reported problems (see above)"
+else
+    echo "  - no OpenCode; skipping agent rendering (CLI-only mode)"
+fi
 
 # ==================================================================
 # [4/7] Install config with path transformation
@@ -347,6 +329,16 @@ configure_models
 echo "[5/7] Setting up directories..."
 chmod +x "$OPENBIOACADEMIA_DIR/tools/"*.py 2>/dev/null || true
 mkdir -p "$OPENBIOACADEMIA_DIR/data" "$OPENBIOACADEMIA_DIR/out/papers" "$OPENBIOACADEMIA_DIR/out/figures"
+
+echo "  Installing academica launcher..."
+mkdir -p "$BIN_DIR"
+cat > "$BIN_DIR/academica" <<EOF
+#!/bin/sh
+exec "$L" "\$@"
+EOF
+chmod +x "$BIN_DIR/academica" "$L"
+echo "  ✓ $BIN_DIR/academica -> $L"
+case ":$PATH:" in *":$BIN_DIR:"*) ;; *) echo "  ⚠ Add $BIN_DIR to PATH to call 'academica' directly" ;; esac
 
 if echo "$@" | grep -q -- "--dev"; then
     echo ""
@@ -392,6 +384,8 @@ echo "  Agents installed: $count / $expected"
 [ "$count" -ge "$expected" ] && echo "  ✓ All agents present" || { echo "  ⚠ Missing agents"; errors=$((errors + 1)); }
 
 [ -f "$OPENCODE_CONFIG/agent-config.json" ] && echo "  ✓ Configuration installed" || { echo "  ⚠ Configuration missing"; errors=$((errors + 1)); }
+[ -f "$BIN_DIR/academica" ] && echo "  ✓ Launcher installed: $BIN_DIR/academica" || { echo "  ⚠ Launcher missing"; errors=$((errors + 1)); }
+"$L" --help >/dev/null 2>&1 && echo "  ✓ academica CLI reachable" || { echo "  ⚠ academica CLI not reachable"; errors=$((errors + 1)); }
 [ -f "$OPENBIOACADEMIA_DIR/.env" ] && echo "  ✓ .env configured" || echo "  ⚠ .env not configured — cp .env.example .env"
 
 echo ""
@@ -411,4 +405,4 @@ echo "  Next:"
 echo "  1. OpenCode → agent tab → research-director"
 echo "  2. Type: \"write a paper about [topic]\""
 echo ""
-echo "  Docs: https://github.com/jzhangc/openbioacademia"
+echo "  Docs: https://github.com/jzhangc/OpenBioAcademia"

@@ -21,18 +21,42 @@ bash install.sh
 
 ## CLI Tools (No Agent Required)
 
-The Python CLI works standalone — no OpenCode or agent platform needed:
+The Python CLI works standalone — no OpenCode or agent platform needed, and no
+dependencies beyond the Python 3.10+ standard library. It can be installed, or run
+straight from a checkout via `bin/academica`:
 
 ```bash
 git clone https://github.com/jzhangc/OpenBioAcademia.git && cd OpenBioAcademia
-pip install -e .
+pip install -e .          # or run bin/academica without installing
 
-academica demo               # Interactive pipeline demo (no API keys)
-academica search QUERY       # Search 4 academic APIs in parallel
-academica verify FILE        # Verify citations in a paper JSON
-academica bibtex DOI         # Generate BibTeX from a DOI
-academica configure           # Set up API keys interactively
+academica demo              # Run all five quality gates on a bundled example (offline, no API keys)
+academica search QUERY      # Search arXiv, Semantic Scholar, CrossRef and OpenAlex in parallel
+academica verify FILE       # Verify citations in a paper JSON, .bib or .tex against 2+ APIs
+academica bibtex DOI        # Generate BibTeX from a DOI
+academica configure         # Set up API keys in .env
 ```
+
+The same CLI drives the full paper pipeline. The Research Director agent calls these
+commands at each stage, and you can call them yourself:
+
+```bash
+academica new "TOPIC" --venue arxiv        # create out/papers/<slug>/ for one paper, prints RUN
+academica voice [samples...]               # build data/voice-profile.json from your writing
+academica search "QUERY" -o RUN/literature/q1.json   # 4 academic APIs in parallel
+academica corpus RUN                       # merge RUN/literature/*.json into a deduplicated corpus
+academica novelty RUN                      # rank the six engines' hypotheses -> RUN/novelty/ranked.json
+academica refs RUN c0003 c0017 ...         # copy corpus papers to references.json and verify them
+academica check RUN STAGE                  # validate a stage's handoff files (literature, gaps, ...)
+academica gate verify RUN                  # phase 6: citations + statistics + AI patterns
+academica gate reviews RUN                 # phase 7: all 10 reviewers accept?
+academica gate style RUN                   # phase 9: em dashes, pattern density, voice
+academica status RUN                       # every stage and gate at a glance
+academica build RUN                        # phase 10: LaTeX + BibTeX + PDF (refuses unless all gates pass)
+```
+
+Every command exits non-zero on failure. Read its output before deciding the next
+step. See `orchestrator/research-director.md` for the full 11-phase workflow that
+ties these commands together.
 
 ---
 
@@ -105,6 +129,104 @@ The installer will ask you the same 6 questions and configure everything automat
 ```bash
 bash install.sh --yes
 ```
+
+---
+
+## Setting Up with OpenCode
+
+The 25 agents (1 orchestrator, 8 subagents, 6 novelty engines, 10 reviewers) are
+Markdown files with YAML frontmatter. `tools/agents.py` renders each one for a
+target OpenCode config directory, substituting the per-agent model from
+`config/agent-config.json` and replacing the `{{...}}` path placeholders
+(`{{OPENBIOACADEMIA_DIR}}`, `{{OPENCODE_CONFIG}}`, `{{OPENCODE_DATA}}`) with real
+paths. The installer does this for you; the steps below are the manual equivalent.
+
+### Agents and subagents
+
+OpenCode discovers agents from two places. Global agents apply to every project;
+project agents apply only inside that project and override globals:
+
+| Scope | Agent files | Config |
+|-------|-------------|--------|
+| **Global** (all projects) | `~/.config/opencode/agents/<name>.md` | `~/.config/opencode/opencode.json` |
+| **Project** (this repo only) | `.opencode/agents/<name>.md` | `.opencode/opencode.json` (or `opencode.json` at the repo root) |
+
+Render the 25 agents into the global location (what `install.sh` does):
+
+```bash
+python3 tools/agents.py --dest ~/.config/opencode/agents \
+  --opencode-config ~/.config/opencode
+python3 tools/agents.py --check --dest ~/.config/opencode/agents   # validate an install
+```
+
+To scope them to this repo only, render into a project `.opencode` directory:
+
+```bash
+python3 tools/agents.py --dest .opencode/agents --opencode-config .opencode
+```
+
+Each rendered file keeps its frontmatter: `mode: primary` for the
+`research-director` (the conductor) and `mode: subagent` for the other 24. The
+permission block already uses the resolved `{{OPENBIOACADEMIA_DIR}}/bin/academica`
+path, so a subagent may only call the `academica` commands it needs.
+
+Select the primary agent with `default_agent` in `opencode.json`:
+
+```jsonc
+// .opencode/opencode.json  (project-level) — or ~/.config/opencode/opencode.json (global)
+{
+  "$schema": "https://opencode.ai/config.json",
+  "default_agent": "research-director"
+}
+```
+
+The installer also copies `config/agent-config.json` to
+`~/.config/opencode/agent-config.json`, which holds each agent's model,
+`fallback_models`, `variant`, `skills` and `permission`. Edit it to switch
+providers; `--model` on `tools/agents.py` overrides every agent at once, and
+`--default-model` replaces the default while keeping per-agent customizations.
+
+### Skills
+
+The 17 portable skills live in `skills/<name>/SKILL.md`. They are the same
+prompts the agents use, packaged to drop into any agent that reads SKILL.md.
+Install them into the global or project skills directory:
+
+```bash
+# global
+cp -r skills/skill-academic-humanizer ~/.config/opencode/skills/
+# or all of them
+for d in skills/*/; do cp -r "$d" ~/.config/opencode/skills/; done
+# project
+cp -r skills/* .opencode/skills/
+# any agent platform
+npx skills add jzhangc/OpenBioAcademia -s '*'
+```
+
+OpenCode finds skills automatically under `~/.config/opencode/skills/` (global)
+and `.opencode/skills/` (project), and also from any directories listed in the
+`skills` array of `opencode.json`.
+
+### Commands (optional slash commands)
+
+You can expose the pipeline as slash commands in `commands/` (global) or
+`.opencode/commands/` (project), or define them inline in `opencode.json`:
+
+```jsonc
+{
+  "$schema": "https://opencode.ai/config.json",
+  "commands": {
+    "paper": { "description": "Write a paper", "template": "Write a paper about $1 using the research-director." }
+  }
+}
+```
+
+### Precedence
+
+OpenCode merges config from global to project (closest wins), and every
+`.opencode` config overrides a direct config at the same level. So a project
+`.opencode/opencode.json` can point `default_agent` at `research-director` for
+just this repo without touching your global setup.
 
 ---
 
@@ -232,15 +354,25 @@ Each paper is independently reviewed by 10 distinct personas running in parallel
 
 ---
 
-## Quality Gates
+## Quality Gates (Code-Enforced)
 
-Every paper passes through 5 hard gates. **If any gate fails, the paper goes back to revision.**
+Every paper passes through 5 hard gates. **The gates are code, not opinions** — they
+run through the `academica` toolchain and record their result (with a hash of the
+draft they ran on) in `RUN/gates.json`. `academica build` refuses to format a draft
+unless all five passed on that exact draft. If any gate fails, the paper goes back
+to revision.
 
-1. **Citation Verification** — Every reference checked against Semantic Scholar + CrossRef APIs. Must be found in 2+ sources. No exceptions.
-2. **Statistical Audit** — Every p-value, effect size, sample size, and test selection validated. No p-hacking, no multiple comparison errors.
-3. **AI-Pattern Detection** — 41 Humanizer patterns scanned. Density must be < 2 violations per 1000 words.
-4. **Style Audit** — Zero em dashes. Pattern density < 1/2000 words. Voice must match the author's writing profile.
-5. **Adversarial Review** — All 10 reviewer personas must recommend acceptance. Not a subset. All 10.
+| Gate | `academica` command | Enforced by | Rule |
+|------|---------------------|-------------|------|
+| **Citations** | `gate citations RUN` | `tools/citation_verifier.py` | Every cited reference found in 2+ APIs. No exceptions. |
+| **Statistics** | `gate statistics RUN` | `tools/stats_audit.py` | Recomputes p from t/F/chi/z/r; flags p-hacking, multiple-comparison errors, impossible values. |
+| **Patterns** | `gate patterns RUN` | `tools/patterns.py` | 41 Humanizer patterns; density < 2 per 1000 words and zero em dashes. |
+| **Style** | `gate style RUN` | `tools/patterns.py` + `tools/voice.py` | Zero em dashes, density < 1/2000 words, voice matches the author profile. |
+| **Reviews** | `gate reviews RUN` | `tools/reviews.py` | All 10 reviewer personas accept (score ≥ 6, no must-fix items). |
+
+Convenience groupings: `gate verify RUN` runs the first three (phase 6);
+`gate all RUN` runs all five. `gate <name> <file>` runs any single gate on a
+`.tex`, `.bib` or JSON file directly.
 
 ---
 
@@ -274,7 +406,7 @@ Yes. Add a folder under `templates/` with `.tex`, `.sty`, and `.cls` files, then
 Provide 2-3 paragraphs of your published writing in `data/voice-profile/`. The writers will match your voice at the sentence level.
 
 **Q: Can I use this without OpenCode?**  
-The agents are OpenCode-compatible, but the Python CLI tools (`tools/literature_client.py`, `tools/citation_verifier.py`) work standalone.
+The agents are OpenCode-compatible, but the Python CLI toolchain (`tools/`) works standalone — run `bin/academica` or `pip install -e .` and use `academica` with no agent platform and no dependencies beyond the Python 3.10+ standard library.
 
 **Q: How do I contribute?**  
 See [CONTRIBUTING.md](CONTRIBUTING.md). Good first issues are tagged. Template stubs need filling, the PyPI package needs publishing, and more reviewer personas are welcome.
@@ -286,18 +418,30 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). Good first issues are tagged. Template s
 ```
 OpenBioAcademia/
 ├── orchestrator/          # Research Director agent (the conductor)
-├── subagents/             # Core writing pipeline agents (writer, verifier, etc.)
+├── subagents/             # 8 core writing pipeline agents (writer, verifier, etc.)
 ├── novelty-engines/       # 6 novelty generation agents
 ├── reviewers/             # 10 adversarial reviewer personas
 ├── skills/                # 17 portable skill files (also available as standalone [novelty-skills](https://github.com/argahv/novelty-skills) repo)
-├── tools/                 # Python CLI toolchain
-│   ├── literature_client.py    # Multi-source lit search
-│   └── citation_verifier.py    # Citation verification + BibTeX
-├── templates/             # LaTeX venue templates (add yours)
-├── config/                # Agent configuration
+├── tools/                 # Python CLI toolchain (stdlib only, 14 modules)
+│   ├── literature_client.py   # Multi-source lit search (arXiv, S2, CrossRef, OpenAlex)
+│   ├── citation_verifier.py   # Citation verification + BibTeX
+│   ├── gates.py               # The 5 code-enforced quality gates
+│   ├── stats_audit.py         # Statistical audit (p-value recomputation, CIs)
+│   ├── patterns.py            # 41 Humanizer AI-pattern detector + em dash count
+│   ├── reviews.py             # 10-reviewer adversarial gate
+│   ├── voice.py               # Author voice calibration
+│   ├── novelty.py             # Merges and ranks the 6 engines' hypotheses
+│   ├── workspace.py           # Run workspace + stage handoff contracts
+│   ├── agents.py              # Renders the 25 agents into an OpenCode config dir
+│   ├── build.py               # Formatter: LaTeX + BibTeX + PDF
+│   ├── settings.py            # .env loading + path resolution
+│   ├── net.py / textutil.py   # HTTP retry helper + LaTeX-to-text
+├── bin/academica          # Zero-install launcher for the CLI
+├── templates/             # LaTeX venue templates (arxiv, neurips, icml, iclr, nature)
+├── config/                # Agent configuration (agent-config.json)
 ├── examples/siren-paper/  # Full pipeline output (13-page paper)
 ├── data/                  # Research memory + voice profiles
-├── tests/                 # Python unit tests
+├── tests/                 # Python unit tests (offline)
 ├── docs/                  # GitHub Pages documentation
 ├── docker-compose.yml     # LaTeX + dev environments
 └── pyproject.toml         # Package metadata
@@ -308,9 +452,13 @@ OpenBioAcademia/
 ## Development
 
 ```bash
-pip install -r requirements.txt
-python -m pytest tests/ -v
-flake8 tools/ --max-line-length=100
+pip install -e ".[dev]"       # pytest, pytest-mock, flake8, requests, pre-commit
+python -m pytest tests/ -v    # all tests run offline; network is mocked
+flake8 tools/ --max-line-length=100 --ignore=E501,W291
+
+# Render the 25 agents into an OpenCode config dir
+python3 tools/agents.py --dest ~/.config/opencode/agents
+python3 tools/agents.py --check --dest ~/.config/opencode/agents
 
 # LaTeX via Docker
 docker compose --profile latex run latex pdflatex out/papers/paper.tex
