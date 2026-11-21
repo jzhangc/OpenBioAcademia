@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 from typing import List, Optional
 
+from openbioacademia import __version__
 from openbioacademia.tools import settings
 
 PIPELINE_HELP = """\
@@ -270,6 +271,7 @@ def parser() -> argparse.ArgumentParser:
         epilog=PIPELINE_HELP,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
+    p.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     sub = p.add_subparsers(dest="command", metavar="COMMAND")
 
     sub.add_parser("demo", help="run the gates on a bundled example paper (offline, no API keys)")

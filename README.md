@@ -549,6 +549,39 @@ docker compose --profile latex run latex pdflatex out/papers/paper.tex
 
 ---
 
+## Versioning and Changelog
+
+The package version encodes both versions this fork carries:
+
+```
+X.Y.Z+up.U.V.W
+```
+
+- `X.Y.Z` (release version) is **OpenBioAcademia's own version**, bumped when this repo gets a new release.
+- `+up.U.V.W` (PEP 440 local version label) is the **upstream version** of [argahv/sisyphus-academica](https://github.com/argahv/sisyphus-academica) at the last sync. Update it whenever `upstream/main` is synced, and record the sync under `docs/dev_sync/sync_log/`.
+- pip ignores local labels in dependency resolution. PyPI does not accept local labels, so a PyPI release publishes the bare `X.Y.Z`.
+
+| Part | Current value | Source |
+|---|---|---|
+| OpenBioAcademia | 0.2.0 | this repo |
+| upstream sisyphus-academica | 0.3.0 | `upstream/main` @ `362ad5d` (2026-10-10), synced 2026-11-03 |
+| package version | `0.2.0+up.0.3.0` | `pyproject.toml` and `src/openbioacademia/__init__.py` (a test enforces the two agree) |
+
+Check it at runtime with `academica --version`.
+
+### Changelog
+
+| Date | What changed |
+|---|---|
+| 2026-11-20 | OpenCode V1/V2 dual compatibility (in progress, uncommitted at writing): `tools/agents.py --format v2` and `OC_FORMAT=v2` render the native V2 `permissions:` array; the installer detects the installed OpenCode major version and warns on the one incompatible combination (v2 render on a V1 binary); `config/agent-config.json` hardcoded developer paths replaced with `/root/...` placeholders rewritten at install time; 11 new render tests (suite 196 to 207); new [docs/opencode-v1-v2.md](docs/opencode-v1-v2.md), README V1/V2 walkthroughs, installation guide rewritten. |
+| 2026-11-11 | Tool sync with upstream (`c47a609`): 12 tool modules ported (`net, settings, textutil, patterns, reviews, stats_audit, voice, novelty, workspace, gates, build, agents`); `citation_verifier.py` and `literature_client.py` replaced with upstream's richer versions; CLI grew from 5 to 14 subcommands, new `bin/academica` launcher; `install.sh` now renders and validates all 25 agents; 25 agent prompts and 16 skills rewired to the gated CLI (em dash count in prompts: 120 to 0); 8 missing agents added to `config/agent-config.json`; ICLR/ICML templates and 6 test files re-added; `pip install .` fixed (broken `build-backend`). |
+| 2026-11-03 | Synced `upstream/main` (`362ad5d`, upstream v0.3.0 of 2026-10-10) into both branches: `main` fast-forwarded, `jz_exp` recorded it in history with a `-s ours` merge so the fork's tree stays intact. Write-up: [docs/dev_sync/sync_log/sync-2026-11-03.md](docs/dev_sync/sync_log/sync-2026-11-03.md). |
+| 2026-09-27 to 2026-10-04 | Steady agent and config iteration: agent prompt updates, `data/voice-profile/` calibration sample (2026-09-30), `config/agent-config.json` introduced (2026-09-28). |
+| 2026-09-04 to 2026-09-15 | Rebrand to OpenBioAcademia (2026-09-06), README and directory restructure, `data/` folder for research memory and voice profiles. |
+| 2026-07-18 to 2026-07-29 | Fork initialized from sisyphus-academica (2026-07-18, upstream @ `5fc1652`); methodology designer update (2026-07-20), voice profile support (2026-07-21), methodologist reviewer additions (2026-07-22). |
+
+---
+
 ## Acknowledgments
 
 - **[Humanizer](https://github.com/blader/humanizer)** by blader — the 30-pattern AI-detection skill this system builds on

@@ -1,5 +1,6 @@
 """Tests for the CLI module (src/openbioacademia/cli.py)."""
 
+import re
 import sys
 from pathlib import Path
 from unittest.mock import patch
@@ -78,3 +79,32 @@ class TestCliCommands:
                 main()
             except SystemExit:
                 pass
+
+
+class TestCliVersion:
+    """Test version reporting and the pyproject drift guard."""
+
+    def test_version_flag_prints_version(self, capsys):
+        """academica --version prints the composite version and exits 0."""
+        from openbioacademia import __version__
+        from openbioacademia.cli import main
+        with patch.object(sys, "argv", ["academica", "--version"]):
+            with pytest.raises(SystemExit) as exc:
+                main()
+        assert exc.value.code == 0
+        assert __version__ in capsys.readouterr().out
+
+    def test_version_encodes_upstream(self):
+        """The version carries both the fork and the upstream version."""
+        from openbioacademia import __version__
+        base, _, local = __version__.partition("+")
+        assert re.fullmatch(r"\d+\.\d+\.\d+", base)
+        assert re.match(r"up\.\d+\.\d+\.\d+$", local)
+
+    def test_version_matches_pyproject(self):
+        """__version__ stays in sync with pyproject.toml."""
+        from openbioacademia import __version__
+        text = (Path(__file__).resolve().parent.parent / "pyproject.toml").read_text(encoding="utf-8")
+        match = re.search(r'^version\s*=\s*"([^"]+)"', text, re.MULTILINE)
+        assert match is not None
+        assert match.group(1) == __version__

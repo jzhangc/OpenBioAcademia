@@ -4,7 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "openbioacademia"
-version = "0.2.0"
+# X.Y.Z = OpenBioAcademia's own release version.
+# +up.U.V.W = PEP 440 local label: version of upstream sisyphus-academica at
+# the last sync (upstream/main @ 362ad5d, synced 2026-11-03). Strip the local
+# label for PyPI releases.
+version = "0.2.0+up.0.3.0"
 description = "Open-source research pipeline — literature review, novelty generation, citation verification, and adversarial review."
 readme = "README.md"
 license = {text = "MIT"}
