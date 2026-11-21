@@ -7,6 +7,10 @@
 #   --dev     Install Python dev dependencies
 #   --latex   Verify LaTeX availability
 #   --check   Validate installation
+#
+# OC_FORMAT (env): v1 (default) or v2 — selects the OpenCode config format
+#   rendered by tools/agents.py. v1 works on both V1 and V2 (auto-translated);
+#   v2 is the native, warning-free V2 shape.
 
 set -euo pipefail
 
@@ -16,6 +20,11 @@ L="$OPENBIOACADEMIA_DIR/bin/academica"
 OPENCODE_AGENTS="${OPENCODE_AGENTS:-$HOME/.config/opencode/agents}"
 OPENCODE_SKILLS="${OPENCODE_SKILLS:-$HOME/.config/opencode/skills}"
 OPENCODE_CONFIG="${OPENCODE_CONFIG:-$HOME/.config/opencode}"
+OC_FORMAT="${OC_FORMAT:-v1}"
+case "$OC_FORMAT" in
+  v1|v2) ;;
+  *) echo "  ⚠ Unknown OC_FORMAT='$OC_FORMAT' (expected v1|v2); defaulting to v1"; OC_FORMAT="v1" ;;
+esac
 
 SKIP_PROMPTS=false
 for arg in "$@"; do [ "$arg" = "--yes" ] && SKIP_PROMPTS=true && break; done
@@ -93,6 +102,27 @@ else
         echo "  → Ref: https://opencode.ai/docs"
         exit 0
     fi
+fi
+
+# Q1b: format vs detected OpenCode major version
+OC_MAJOR="$(opencode --version 2>/dev/null | grep -oE '[0-9]+' | head -1 || true)"
+if [ "$PLATFORM" = "opencode" ]; then
+    case "$OC_FORMAT" in
+        v2)
+            if [ -n "$OC_MAJOR" ] && [ "$OC_MAJOR" -lt 2 ]; then
+                echo "  ⚠ OC_FORMAT=v2 renders the native V2 'permissions:' array, which"
+                echo "    OpenCode V$OC_MAJOR does not read (agents would fall back to default"
+                echo "    permissions). Use the default OC_FORMAT=v1, or upgrade to V2:"
+                echo "    https://opencode.ai/docs/migrate-v1"
+            fi
+            ;;
+        v1)
+            if [ -n "$OC_MAJOR" ] && [ "$OC_MAJOR" -ge 2 ]; then
+                echo "  ✓ OpenCode V$OC_MAJOR detected. OC_FORMAT=v1 auto-translates in V2;"
+                echo "    use OC_FORMAT=v2 for the native, warning-free render."
+            fi
+            ;;
+    esac
 fi
 
 # Q2: oh-my-openagent integration
@@ -225,6 +255,17 @@ fi
 echo ""
 
 # ==================================================================
+# Concrete model for the chosen provider (empty = keep config default)
+# ==================================================================
+provider_model() {
+    case "$LLM_PROVIDER" in
+        anthropic | both) echo "anthropic/claude-sonnet-4" ;;
+        openai) echo "openai/gpt-4o" ;;
+        *) echo "" ;;
+    esac
+}
+
+# ==================================================================
 # Transform config/agent-config.json
 # ==================================================================
 install_config() {
@@ -250,29 +291,50 @@ configure_models() {
     local config_file="$OPENCODE_CONFIG/agent-config.json"
     [ ! -f "$config_file" ] && return
 
+    local new_model old_model
+    new_model="$(provider_model)"
+    if [ -z "$new_model" ]; then
+        echo "  → Using configured default models (no change needed)"
+        return
+    fi
+    # Replace only agents that use the repo's current default model, so
+    # per-agent custom models survive (same rule as agents.py --default-model).
+    old_model="$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))["default_model"])' \
+        "$OPENBIOACADEMIA_DIR/config/agent-config.json" 2>/dev/null || true)"
+    if [ -z "$old_model" ] || [ "$old_model" = "$new_model" ]; then
+        return
+    fi
+    python3 - "$config_file" "$old_model" "$new_model" <<'PY'
+import json, sys
+
+path, old, new = sys.argv[1], sys.argv[2], sys.argv[3]
+with open(path, encoding="utf-8") as f:
+    cfg = json.load(f)
+for agent in (cfg.get("agents") or {}).values():
+    if agent.get("model") == old:
+        agent["model"] = new
+if cfg.get("default_model") == old:
+    cfg["default_model"] = new
+with open(path, "w", encoding="utf-8") as f:
+    json.dump(cfg, f, indent=2, ensure_ascii=False)
+    f.write("\n")
+PY
     case "$LLM_PROVIDER" in
         anthropic)
-            sed -i 's|"model": "9router/opencode-free"|"model": "anthropic/claude-sonnet-4"|g' "$config_file"
             if [ "$CLAUDE_MAX20" = true ]; then
-                sed -i 's|"variant": "think"|"variant": "think"|' "$config_file"
                 echo "  → Claude Max20: all agents set to Claude Sonnet 4 (unlimited)"
             else
                 echo "  → All agents set to Claude Sonnet 4"
             fi
             ;;
         openai)
-            sed -i 's|"model": "9router/opencode-free"|"model": "openai/gpt-4o"|g' "$config_file"
             echo "  → All agents set to GPT-4o"
             echo "  ⚠ Note: Novelty engines and writer perform better with Claude."
             echo "    Edit config/agent-config.json to use Claude for those agents."
             ;;
         both)
-            sed -i 's|"model": "9router/opencode-free"|"model": "anthropic/claude-sonnet-4"|g' "$config_file"
             echo "  → Writers, novelty engines, reviewers → Claude Sonnet 4"
             echo "  → Edit config/agent-config.json to set verifier/literature-scout to openai/gpt-4o"
-            ;;
-        9router)
-            echo "  → Using default 9router gateway (no change needed)"
             ;;
     esac
 }
@@ -310,7 +372,9 @@ echo "  ✓ Academic Humanizer installed"
 # ==================================================================
 echo "[3/7] Render agents via tools/agents.py..."
 if command -v opencode >/dev/null 2>&1 || [ -d "$OPENCODE_AGENTS" ]; then
-    AGENT_ARGS=(--dest "$OPENCODE_AGENTS" --opencode-config "$OPENCODE_CONFIG")
+    AGENT_ARGS=(--dest "$OPENCODE_AGENTS" --opencode-config "$OPENCODE_CONFIG" --format "$OC_FORMAT")
+    DEFAULT_MODEL="$(provider_model)"
+    [ -n "$DEFAULT_MODEL" ] && AGENT_ARGS+=(--default-model "$DEFAULT_MODEL")
     python3 "$OPENBIOACADEMIA_DIR/tools/agents.py" "${AGENT_ARGS[@]}" || echo "  ⚠ agents.py reported problems (see above)"
 else
     echo "  - no OpenCode; skipping agent rendering (CLI-only mode)"
@@ -400,6 +464,7 @@ echo "  Profile:   $AUTHOR_NAME"
 echo "  Provider:  $LLM_PROVIDER"
 echo "  Agents:    25"
 echo "  LaTeX:     $([ "$HAS_LATEX" = true ] && echo yes || echo no)"
+echo "  Format: OpenCode $OC_FORMAT (v1 = V1 frontmatter, v2 = native V2 permissions array)"
 echo ""
 echo "  Next:"
 echo "  1. OpenCode → agent tab → research-director"

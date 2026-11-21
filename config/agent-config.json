@@ -21,8 +21,8 @@
         "edit": "deny",
         "doom_loop": "ask",
         "external_directory": {
-          "/Users/jingzhang/Documents/git_repo/OpenBioAcademia/*": "allow",
-          "/Users/jingzhang/.config/opencode/skills/humanizer/*": "allow",
+          "/root/openbioacademia/*": "allow",
+          "/root/.config/opencode/skills/humanizer/*": "allow",
           "/tmp/opencode/*": "allow"
         }
       }
@@ -39,7 +39,7 @@
         "bash": "allow",
         "webfetch": "allow",
         "read": "allow",
-        "write": { "/Users/jingzhang/Documents/git_repo/OpenBioAcademia/out/papers/*": "allow" },
+        "write": { "/root/openbioacademia/out/papers/*": "allow" },
         "edit": "deny",
         "task": "deny"
       }
@@ -54,7 +54,7 @@
       ],
       "permission": {
         "read": "allow",
-        "write": { "/Users/jingzhang/Documents/git_repo/OpenBioAcademia/out/papers/*": "allow" },
+        "write": { "/root/openbioacademia/out/papers/*": "allow" },
         "webfetch": "allow",
         "bash": "deny",
         "edit": "deny",
@@ -71,7 +71,7 @@
       ],
       "permission": {
         "read": "allow",
-        "write": { "/Users/jingzhang/Documents/git_repo/OpenBioAcademia/out/papers/*": "allow" },
+        "write": { "/root/openbioacademia/out/papers/*": "allow" },
         "bash": "allow",
         "webfetch": "allow",
         "edit": "deny",
@@ -88,7 +88,7 @@
       ],
       "permission": {
         "read": "allow",
-        "write": { "/Users/jingzhang/Documents/git_repo/OpenBioAcademia/out/papers/*": "allow" },
+        "write": { "/root/openbioacademia/out/papers/*": "allow" },
         "bash": "deny",
         "webfetch": "allow",
         "edit": "deny",
@@ -103,7 +103,7 @@
       "permission": {
         "bash": "allow",
         "read": "allow",
-        "write": { "/Users/jingzhang/Documents/git_repo/OpenBioAcademia/*": "allow" },
+        "write": { "/root/openbioacademia/*": "allow" },
         "webfetch": "allow",
         "edit": "deny",
         "task": "deny"
@@ -119,7 +119,7 @@
       ],
       "permission": {
         "read": "allow",
-        "write": { "/Users/jingzhang/Documents/git_repo/OpenBioAcademia/out/papers/*": "allow" },
+        "write": { "/root/openbioacademia/out/papers/*": "allow" },
         "bash": "deny",
         "webfetch": "allow",
         "edit": "deny",
@@ -136,7 +136,7 @@
       ],
       "permission": {
         "read": "allow",
-        "write": { "/Users/jingzhang/Documents/git_repo/OpenBioAcademia/out/papers/*": "allow" },
+        "write": { "/root/openbioacademia/out/papers/*": "allow" },
         "bash": "deny",
         "webfetch": "allow",
         "edit": "deny",
@@ -153,7 +153,7 @@
       ],
       "permission": {
         "read": "allow",
-        "write": { "/Users/jingzhang/Documents/git_repo/OpenBioAcademia/out/papers/*": "allow" },
+        "write": { "/root/openbioacademia/out/papers/*": "allow" },
         "bash": "deny",
         "webfetch": "allow",
         "edit": "deny",
@@ -170,7 +170,7 @@
       ],
       "permission": {
         "read": "allow",
-        "write": { "/Users/jingzhang/Documents/git_repo/OpenBioAcademia/out/papers/*": "allow" },
+        "write": { "/root/openbioacademia/out/papers/*": "allow" },
         "bash": "deny",
         "webfetch": "allow",
         "edit": "deny",
@@ -187,7 +187,7 @@
       ],
       "permission": {
         "read": "allow",
-        "write": { "/Users/jingzhang/Documents/git_repo/OpenBioAcademia/out/papers/*": "allow" },
+        "write": { "/root/openbioacademia/out/papers/*": "allow" },
         "bash": "deny",
         "webfetch": "allow",
         "edit": "deny",
@@ -204,7 +204,7 @@
       ],
       "permission": {
         "read": "allow",
-        "write": { "/Users/jingzhang/Documents/git_repo/OpenBioAcademia/out/papers/*": "allow" },
+        "write": { "/root/openbioacademia/out/papers/*": "allow" },
         "bash": "deny",
         "webfetch": "allow",
         "edit": "deny",
@@ -221,7 +221,7 @@
       ],
       "permission": {
         "read": "allow",
-        "write": { "/Users/jingzhang/Documents/git_repo/OpenBioAcademia/out/papers/*": "allow" },
+        "write": { "/root/openbioacademia/out/papers/*": "allow" },
         "bash": "deny",
         "webfetch": "allow",
         "edit": "deny",
@@ -238,7 +238,7 @@
       ],
       "permission": {
         "read": "allow",
-        "write": { "/Users/jingzhang/Documents/git_repo/OpenBioAcademia/out/papers/*": "allow" },
+        "write": { "/root/openbioacademia/out/papers/*": "allow" },
         "bash": "deny",
         "webfetch": "allow",
         "edit": "deny",
@@ -255,7 +255,7 @@
       ],
       "permission": {
         "read": "allow",
-        "write": { "/Users/jingzhang/Documents/git_repo/OpenBioAcademia/out/papers/*": "allow" },
+        "write": { "/root/openbioacademia/out/papers/*": "allow" },
         "bash": "deny",
         "webfetch": "allow",
         "edit": "deny",
@@ -272,7 +272,7 @@
       ],
       "permission": {
         "read": "allow",
-        "write": { "/Users/jingzhang/Documents/git_repo/OpenBioAcademia/out/papers/*": "allow" },
+        "write": { "/root/openbioacademia/out/papers/*": "allow" },
         "bash": "deny",
         "webfetch": "allow",
         "edit": "deny",
@@ -289,7 +289,7 @@
       ],
       "permission": {
         "read": "allow",
-        "write": { "/Users/jingzhang/Documents/git_repo/OpenBioAcademia/out/papers/*": "allow" },
+        "write": { "/root/openbioacademia/out/papers/*": "allow" },
         "bash": "deny",
         "webfetch": "allow",
         "edit": "deny",
@@ -306,7 +306,7 @@
       ],
       "permission": {
         "read": "allow",
-        "write": { "/Users/jingzhang/Documents/git_repo/OpenBioAcademia/out/papers/*": "allow" },
+        "write": { "/root/openbioacademia/out/papers/*": "allow" },
         "bash": "deny",
         "webfetch": "allow",
         "edit": "deny",
@@ -323,7 +323,7 @@
       ],
       "permission": {
         "read": "allow",
-        "write": { "/Users/jingzhang/Documents/git_repo/OpenBioAcademia/out/papers/*": "allow" },
+        "write": { "/root/openbioacademia/out/papers/*": "allow" },
         "bash": "allow",
         "webfetch": "allow",
         "edit": "deny",
@@ -340,7 +340,7 @@
       ],
       "permission": {
         "read": "allow",
-        "write": { "/Users/jingzhang/Documents/git_repo/OpenBioAcademia/out/papers/*": "allow" },
+        "write": { "/root/openbioacademia/out/papers/*": "allow" },
         "bash": "allow",
         "webfetch": "allow",
         "edit": "deny",
@@ -357,7 +357,7 @@
       ],
       "permission": {
         "read": "allow",
-        "write": { "/Users/jingzhang/Documents/git_repo/OpenBioAcademia/out/papers/*": "allow" },
+        "write": { "/root/openbioacademia/out/papers/*": "allow" },
         "bash": "deny",
         "webfetch": "allow",
         "edit": "deny",
@@ -374,7 +374,7 @@
       ],
       "permission": {
         "read": "allow",
-        "write": { "/Users/jingzhang/Documents/git_repo/OpenBioAcademia/out/papers/*": "allow" },
+        "write": { "/root/openbioacademia/out/papers/*": "allow" },
         "bash": "deny",
         "webfetch": "allow",
         "edit": "deny",
@@ -391,7 +391,7 @@
       ],
       "permission": {
         "read": "allow",
-        "write": { "/Users/jingzhang/Documents/git_repo/OpenBioAcademia/out/papers/*": "allow" },
+        "write": { "/root/openbioacademia/out/papers/*": "allow" },
         "bash": "deny",
         "webfetch": "allow",
         "edit": "deny",
@@ -408,7 +408,7 @@
       ],
       "permission": {
         "read": "allow",
-        "write": { "/Users/jingzhang/Documents/git_repo/OpenBioAcademia/out/papers/*": "allow" },
+        "write": { "/root/openbioacademia/out/papers/*": "allow" },
         "bash": "deny",
         "webfetch": "allow",
         "edit": "deny",
@@ -425,7 +425,7 @@
       ],
       "permission": {
         "read": "allow",
-        "write": { "/Users/jingzhang/Documents/git_repo/OpenBioAcademia/out/papers/*": "allow" },
+        "write": { "/root/openbioacademia/out/papers/*": "allow" },
         "bash": "deny",
         "webfetch": "allow",
         "edit": "deny",

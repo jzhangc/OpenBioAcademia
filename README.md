@@ -181,10 +181,12 @@ Select the primary agent with `default_agent` in `opencode.json`:
 ```
 
 The installer also copies `config/agent-config.json` to
-`~/.config/opencode/agent-config.json`, which holds each agent's model,
-`fallback_models`, `variant`, `skills` and `permission`. Edit it to switch
-providers; `--model` on `tools/agents.py` overrides every agent at once, and
-`--default-model` replaces the default while keeping per-agent customizations.
+`~/.config/opencode/agent-config.json`. The copy is a reference (and for
+OhMyOpenAgent under its own conventions); OpenCode itself reads the rendered
+agent files, where each model is baked in at render time. To switch providers,
+edit the repo's `config/agent-config.json` and re-run `tools/agents.py`, or
+pass `--model` to override every agent at once and `--default-model` to replace
+the default while keeping per-agent customizations.
 
 ### Skills
 
@@ -205,14 +207,20 @@ npx skills add jzhangc/OpenBioAcademia -s '*'
 
 OpenCode finds skills automatically under `~/.config/opencode/skills/` (global)
 and `.opencode/skills/` (project), and also from any directories listed in the
-`skills` array of `opencode.json`.
+`skills` config. In OpenCode V2 that is an array
+(`"skills": ["./team-skills"]`); in V1 it is an object
+(`"skills": {"paths": ["./team-skills"], "urls": []}`). The automatic
+directories work on both versions, which is what `install.sh` uses.
 
 ### Commands (optional slash commands)
 
 You can expose the pipeline as slash commands in `commands/` (global) or
-`.opencode/commands/` (project), or define them inline in `opencode.json`:
+`.opencode/commands/` (project) (Markdown command files load on both V1 and
+V2), or define them inline in `opencode.json`. The inline key is `commands`
+in OpenCode V2 and `command` in V1:
 
 ```jsonc
+// OpenCode V2 (V1: rename "commands" to "command")
 {
   "$schema": "https://opencode.ai/config.json",
   "commands": {
@@ -227,6 +235,81 @@ OpenCode merges config from global to project (closest wins), and every
 `.opencode` config overrides a direct config at the same level. So a project
 `.opencode/opencode.json` can point `default_agent` at `research-director` for
 just this repo without touching your global setup.
+
+### OpenCode V1 vs V2
+
+`tools/agents.py` renders each agent's frontmatter in one of two formats,
+selected with `--format` (default `v1`); `install.sh` reads the same choice from
+the `OC_FORMAT` environment variable (`v1` or `v2`, default `v1`).
+
+| | V1 (default) | V2 (native) |
+|---|---|---|
+| Frontmatter key | `permission:` block | ordered `permissions:` array |
+| Action names | `bash`, `task`, `write` | `shell`, `subagent`, `edit` |
+| Loads on | V1 and V2 (V2 auto-translates, with deprecation warnings) | V2 only, warning-free |
+
+V1 output works on both V1 and V2 because V2 auto-translates V1 frontmatter. V2
+output is the native, warning-free shape for V2-only installs. OMO-only keys
+(`call_omo_agent`, `doom_loop`, `plan_enter/exit`, `repo_clone/overview`) are
+omitted as comments in v2 output; `external_directory` is allowed by default in
+V2 (V1 asked).
+
+```bash
+# V1 (default): loads on both OpenCode V1 and V2
+python3 tools/agents.py --dest ~/.config/opencode/agents \
+  --opencode-config ~/.config/opencode
+
+# V2 (native, warning-free)
+python3 tools/agents.py --format v2 --dest ~/.config/opencode/agents \
+  --opencode-config ~/.config/opencode
+
+# install.sh form
+OC_FORMAT=v2 bash install.sh --yes
+```
+
+Check which major you have with `opencode --version` (for example
+`opencode v2.3.1`), then follow the matching walkthrough.
+
+#### Using it with OpenCode V1
+
+```bash
+bash install.sh --yes                                   # V1 format (default)
+python3 tools/agents.py --check --dest ~/.config/opencode/agents
+# OpenCode -> agent tab -> research-director
+```
+
+The rendered `permission:` blocks are the native V1 shape, and an
+OhMyOpenAgent install (if you have one) additionally reads the OMO fields in
+the frontmatter and in `~/.config/opencode/agent-config.json`.
+
+#### Using it with OpenCode V2
+
+```bash
+# Option A (default): V1 render, auto-translated by V2 (deprecation note in log)
+bash install.sh --yes
+
+# Option B: native V2 render, warning-free
+OC_FORMAT=v2 bash install.sh --yes
+
+python3 tools/agents.py --check --dest ~/.config/opencode/agents
+# OpenCode -> agent tab -> research-director
+```
+
+Version notes for V2:
+
+- **Option B** drops the OMO-only permission actions and the per-agent
+  `skills:` field as comments (native V2 has no equivalents for them). Keep
+  skills installed globally or under `.opencode/skills/` so V2 still finds
+  them.
+- V2 allows `external_directory` access by default, where V1 asked. To keep
+  the V1 behavior, add `{"action": "external_directory", "resource": "*", "effect": "ask"}`
+  to `permissions` in `~/.config/opencode/opencode.json`.
+- OhMyOpenAgent is a V1-era plugin, and V1 plugins do not run in V2. Native
+  OpenBioAcademia (agents, skills, `academica` CLI) does not need OMO; check
+  the OMO project for V2 support before relying on OMO-only fields.
+
+Full reference, including the field-by-field mapping:
+[docs/opencode-v1-v2.md](docs/opencode-v1-v2.md).
 
 ---
 
@@ -478,5 +561,3 @@ docker compose --profile latex run latex pdflatex out/papers/paper.tex
 ## License
 
 MIT — see [LICENSE](LICENSE) for details.
-
-⭐ **Star this repo if you write research papers — it helps others find it.**

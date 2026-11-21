@@ -157,14 +157,20 @@ Novelty engines are the heart of the system. Each is a single markdown file.
      - skill-academic-humanizer
    permission:
      "*": deny
-     read: { "*": allow }
-     write: { /root/sisyphus-academica/out/papers/*: allow }
+     read:
+       "*": allow
+     write:
+       "{{OPENBIOACADEMIA_DIR}}/out/papers/*": allow
      bash: deny
      webfetch: allow
      task: deny
      call_omo_agent: deny
    ---
    ```
+   Keep the V1 `permission` block in the source; `tools/agents.py` renders
+   it for OpenCode V1 and V2 (see `docs/opencode-v1-v2.md`). Use the
+   `{{OPENBIOACADEMIA_DIR}}` placeholder for paths, never a real absolute
+   path.
 4. Add the engine to the workflow in `orchestrator/research-director.md`
 5. Add it to `config/agent-config.json`
 
